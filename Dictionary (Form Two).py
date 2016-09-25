@@ -8,61 +8,63 @@ class Dictionary:
     found = False;
 
     def resetDictionary(self):
-        x=0;
-        wordandattributes = [];
-        heldstring = "";
-        index = 0;
-        found = False;
-        synonyms = [];
+        self.x=0;
+        self.wordandattributes = [];
+        self.heldstring = "";
+        self.index = 0;
+        self.found = False;
+        self.synonyms = [];
 
     def default(self):
-        x = 0;
-        heldstring = "";
+        self.x = 0;
+        self.heldstring = "";
 
     def instantiateDictionary(self):
         dictfile = open("Dict.txt","r");
-        entries = dictfile.read().split("|");
+        self.entries = dictfile.read().split("|");
         x=0;
 
     def searchDictionaryEnglish(self,entered):
-        while(x<len(entries)):
-            heldstring = entries[x];
-            wordandattributes = heldstring.split("/");
-            if(entered==wordandattributes[0]):
-                print("Your word \"{}\" translates to \"{}\". \nIt is a {} and is synonymous with {}.".format(wordandattributes[0],wordandattributes[1],wordandattributes[2],wordandattributes[3]));
-                synonyms = wordandattributes[3].split(",");#Splits up all the synonyms into a readable list
-                found = True;
-                index = x;#Keeps the index of the word in case you wish to edit the entry.
+        while(self.x<len(self.entries)):
+            self.heldstring = self.entries[self.x];
+            self.wordandattributes = self.heldstring.split("/");
+            if(entered==self.wordandattributes[0]):
+                print("Your word \"{}\" translates to \"{}\". \nIt is a {} and is synonymous with {}.".format(self.wordandattributes[0],self.wordandattributes[1],self.wordandattributes[2],self.wordandattributes[3]));
+                self.synonyms = self.wordandattributes[3].split(",");#Splits up all the synonyms into a readable list
+                self.found = True;
+                self.index = self.x;#Keeps the index of the word in case you wish to edit the entry.
                 break;
             x+=1;
         self.default();
     def searchDictionaryArticano(self):
         des="";
+        already = True;
+        existingword = "";
         while(already):
                 des = raw_input("What is the desired translation of this word? \n");#We have to search everything again just to make sure that the desired translation doesn't already mean something else.
-                while(x<len(entries)):
-                    heldstring = entries[x];
+                while(self.x<len(self.entries)):
+                    self.heldstring = self.entries[x];
                    # print(entries[x])
-                    existingword = heldstring.split("/")[1];
+                    existingword = self.heldstring.split("/")[1];
                     if(existingword==des):
                        print("Sorry, that word already exists. \n");
-                       x=0;
+                       self.x=0;
                        break;
-                    x+=1;
-                if(x==len(entries)):
+                    self.x+=1;
+                if(self.x==len(self.entries)):
                     already=False;
         return des;
     def searchDictionaryArticano(self,entered):
-        while(x<len(entries)):
-            heldstring = entries[x];
-            wordandattributes = heldstring.split("/");
-            if(entered==wordandattributes[1]):
-                print("Your word \"{}\" translates to \"{}\". \nIt is a {} and is synonymous with {}.".format(wordandattributes[0],wordandattributes[1],wordandattributes[2],wordandattributes[3]));
-                synonyms = wordandattributes[3].split(",");#Splits up all the synonyms into a readable list
-                found = True;
-                index = x;#Keeps the index of the word in case you wish to edit the entry.
+        while(self.x<len(self.entries)):
+            self.heldstring = self.entries[x];
+            self.wordandattributes = self.heldstring.split("/");
+            if(self.entered==self.wordandattributes[1]):
+                print("Your word \"{}\" translates to \"{}\". \nIt is a {} and is synonymous with {}.".format(self.wordandattributes[0],self.wordandattributes[1],self.wordandattributes[2],self.wordandattributes[3]));
+                self.synonyms = self.wordandattributes[3].split(",");#Splits up all the synonyms into a readable list
+                self.found = True;
+                self.index = self.x;#Keeps the index of the word in case you wish to edit the entry.
                 break;
-            x+=1;
+            self.x+=1;
         self.default();
 
     def conjugateVerb(self,Verb):
@@ -146,6 +148,7 @@ def Ask(Q,PosAns,Ans):
     return ("Good Answer");
             
 Articano = Dictionary();
+tonk="";
 print("Welcome to the Articano Adaptable Dictionary");
 running = True;
 while(running):
@@ -163,11 +166,11 @@ while(running):
         if(Articano.wordandattributes[2]=="Verb"):
             Ask("Do you wish to have this verb conjugated?",["Yes","No"],conj);
             if(conj == "Yes"):#When conjugating it takes all of the verb form up until the "re" and then adds an ending or another word
-                Articano.conjugateVerb(Articano.wordandattributes[1][0:len(wordandattributes)-2]);
+                Articano.conjugateVerb(Articano.wordandattributes[1][0:len(Articano.wordandattributes)-2]);
         elif(Articano.wordandattributes[2]=="Reflexive Verb"):
             Ask("Do you wish to have this verb conjugated?",["Yes","No"],conj)
             if(conj=="Yes"):
-                Articano.conjugateVerb(Articano.wordandattributes[1][0:len(wordandattributes)-4]);
+                Articano.conjugateVerb(Articano.wordandattributes[1][0:len(Articano.wordandattributes)-4]);
     if(Articano.found == False):       #Just like in English, the conditional, imperfect, and future tenses use another word rather than a separate conjugation.
         Ask("You have entered {}. Is this correct?".format(entered),["Yes","No"],z);
         cont=True;
@@ -181,13 +184,13 @@ while(running):
         finalstring+="|";
         finalstring+=Articano.entries[x];
         x+=1;
-    if (found==False and cont==True):
+    if (Articano.found==False and cont==True):
         finalstring+="|";
         finalstring+=inputstring;
     with open("Dict.txt", "w") as myfile:
         myfile.write(finalstring);
-    Ask("Anything else?",["Yes","No"],z);
-    if(z=="No"):
+    Ask("Anything else?",["Yes","No"],tonk);
+    if(tonk=="No"):
         running = False;
 
 
