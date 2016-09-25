@@ -22,7 +22,7 @@ class Dictionary:
     def instantiateDictionary(self):
         dictfile = open("Dict.txt","r");
         self.entries = dictfile.read().split("|");
-        x=0;
+        self.x=0;
 
     def searchDictionaryEnglish(self,entered):
         while(self.x<len(self.entries)):
@@ -34,9 +34,9 @@ class Dictionary:
                 self.found = True;
                 self.index = self.x;#Keeps the index of the word in case you wish to edit the entry.
                 break;
-            x+=1;
+            self.x+=1;
         self.default();
-    def searchDictionaryArticano(self):
+    def checkAvailability(self):
         des="";
         already = True;
         existingword = "";
@@ -91,45 +91,48 @@ class Dictionary:
         else:
               return "Your Adjective is dumb."
     def createEntry(self,Word):
+        z="";
+        inputstring="";
+        synfound=False;
         inputstring += Word;
         #print(inputstring)
         inputstring+="/";
-        inputstring+=searchDictionaryArticano();
+        inputstring+=self.checkAvailability();
         x=0;
        # print(inputstring);
         inputstring+="/";
-        Ask("What type of word is this?",["Verb","Reflexive Verb","Noun","Adjective","Preposition","Other"],z);
+        z=Ask("What type of word is this?",["Verb","Reflexive Verb","Noun","Adjective","Preposition","Other"],z);
         inputstring+=z;
         inputstring+="/";
         #Here comes the hardest part. We will search have to search for all words with shared synonyms and add them to the list. RIGHT NOW WE HAVE NOT ADDED THIS FUNCTION
-        Ask("Does your word have any synonyms?",["Yes","No"],z);
+        z=Ask("Does your word have any synonyms?",["Yes","No"],z);
         while(z=="Yes"):
             z = raw_input("Please enter a synonym in English, and we will see if we have it. \n")
-            while(x<len(entries)):
-                heldstring = entries[x];
+            while(self.x<len(self.entries)):
+                self.heldstring = self.entries[x];
                 existingword = heldstring.split("/")[0];
                 if(z==existingword):
                     print("We have this word! Huzzah!\n");
                     synfound = True;
                     index=x;
-                    if (entries[x].split("/")[3]==""):
-                        entries[x]+=inputstring.split("/")[1];
+                    if (self.entries[x].split("/")[3]==""):
+                        self.entries[x]+=inputstring.split("/")[1];
                     else:
-                        entries[x]+=",";
-                        entries[x]+=inputstring.split("/")[1];
+                        self.entries[x]+=",";
+                        self.entries[x]+=inputstring.split("/")[1];
                     if (numbsyn==0):
-                        inputstring+=entries[x].split("/")[1];
+                        inputstring+=self.entries[x].split("/")[1];
                         #print(inputstring);#I dunno, a whole bunch o' bullshit had to happen to get the synonyms to work.
                         numbsyn+=1;
                     else:
                         inputstring+=",";
-                        inputstring+=entries[x].split("/")[1];
+                        inputstring+=self.entries[x].split("/")[1];
                         print(inputstring);
-                x+=1;
-            if (x==len(entries)-1):
+                self.x+=1;
+            if (self.x==len(self.entries)-1):
                 print("Sorry, we did not find that word.")
             if(synfound):
-                print("These are the known synonyms of the word you just added: {}".format(entries[index].split("/")[3]));
+                print("These are the known synonyms of the word you just added: {}".format(self.entries[index].split("/")[3]));
             Ask("Does your word have any synonyms?",["Yes","No"],z);
         return inputstring;
         
@@ -145,8 +148,7 @@ def Ask(Q,PosAns,Ans):
         except:
             Ans = raw_input("{} {}\n".format(Q,PosAns));
             checkAns=0;
-    return ("Good Answer");
-            
+    return Ans;
 Articano = Dictionary();
 tonk="";
 print("Welcome to the Articano Adaptable Dictionary");
@@ -162,34 +164,36 @@ while(running):
   #  success = False; #This is used in the Synonyms search
    # numbsyn = 0; #This is used to figure out whether a comma is necessary in the synonym search
     #synfound = False;#This is used in the Synonyms search to suggest other Synonyms
+    reso = "";
     if(Articano.found):
         if(Articano.wordandattributes[2]=="Verb"):
-            Ask("Do you wish to have this verb conjugated?",["Yes","No"],conj);
+            conj=Ask("Do you wish to have this verb conjugated?",["Yes","No"],conj);
+            print(conj);
             if(conj == "Yes"):#When conjugating it takes all of the verb form up until the "re" and then adds an ending or another word
-                Articano.conjugateVerb(Articano.wordandattributes[1][0:len(Articano.wordandattributes)-2]);
+                Articano.conjugateVerb(Articano.wordandattributes[1][0:len(Articano.wordandattributes[1])-2]);
         elif(Articano.wordandattributes[2]=="Reflexive Verb"):
-            Ask("Do you wish to have this verb conjugated?",["Yes","No"],conj)
+            conj=Ask("Do you wish to have this verb conjugated?",["Yes","No"],conj)
             if(conj=="Yes"):
-                Articano.conjugateVerb(Articano.wordandattributes[1][0:len(Articano.wordandattributes)-4]);
+                Articano.conjugateVerb(Articano.wordandattributes[1][0:len(Articano.wordandattributes[1])-4]);
     if(Articano.found == False):       #Just like in English, the conditional, imperfect, and future tenses use another word rather than a separate conjugation.
-        Ask("You have entered {}. Is this correct?".format(entered),["Yes","No"],z);
+        tonk=Ask("You have entered {}. Is this correct?".format(entered),["Yes","No"],tonk);
         cont=True;
-        if(z=="No"):
+        if(tonk=="No"):
             cont=False;
         else:
-            Articano.appendWord(entered);
-    x = 1;
+            reso=Articano.createEntry(entered);
+    f = 1;
     finalstring = Articano.entries[0];
-    while(x<len(Articano.entries)):
+    while(f<len(Articano.entries)):
         finalstring+="|";
-        finalstring+=Articano.entries[x];
-        x+=1;
+        finalstring+=Articano.entries[f];
+        f+=1;
     if (Articano.found==False and cont==True):
         finalstring+="|";
-        finalstring+=inputstring;
+        finalstring+=reso;
     with open("Dict.txt", "w") as myfile:
         myfile.write(finalstring);
-    Ask("Anything else?",["Yes","No"],tonk);
+    tonk=Ask("Anything else?",["Yes","No"],tonk);
     if(tonk=="No"):
         running = False;
 
