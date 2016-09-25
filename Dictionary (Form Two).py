@@ -43,7 +43,7 @@ class Dictionary:
         while(already):
                 des = raw_input("What is the desired translation of this word? \n");#We have to search everything again just to make sure that the desired translation doesn't already mean something else.
                 while(self.x<len(self.entries)):
-                    self.heldstring = self.entries[x];
+                    self.heldstring = self.entries[self.x];
                    # print(entries[x])
                     existingword = self.heldstring.split("/")[1];
                     if(existingword==des):
@@ -56,7 +56,7 @@ class Dictionary:
         return des;
     def searchDictionaryArticano(self,entered):
         while(self.x<len(self.entries)):
-            self.heldstring = self.entries[x];
+            self.heldstring = self.entries[self.x];
             self.wordandattributes = self.heldstring.split("/");
             if(self.entered==self.wordandattributes[1]):
                 print("Your word \"{}\" translates to \"{}\". \nIt is a {} and is synonymous with {}.".format(self.wordandattributes[0],self.wordandattributes[1],self.wordandattributes[2],self.wordandattributes[3]));
@@ -94,11 +94,12 @@ class Dictionary:
         z="";
         inputstring="";
         synfound=False;
+        numbsyn=0;
         inputstring += Word;
         #print(inputstring)
         inputstring+="/";
         inputstring+=self.checkAvailability();
-        x=0;
+        self.x=0;
        # print(inputstring);
         inputstring+="/";
         z=Ask("What type of word is this?",["Verb","Reflexive Verb","Noun","Adjective","Preposition","Other"],z);
@@ -109,31 +110,34 @@ class Dictionary:
         while(z=="Yes"):
             z = raw_input("Please enter a synonym in English, and we will see if we have it. \n")
             while(self.x<len(self.entries)):
-                self.heldstring = self.entries[x];
-                existingword = heldstring.split("/")[0];
+                self.heldstring = self.entries[self.x];
+                print(self.entries[self.x]);
+                existingword = self.heldstring.split("/")[0];
                 if(z==existingword):
                     print("We have this word! Huzzah!\n");
                     synfound = True;
-                    index=x;
-                    if (self.entries[x].split("/")[3]==""):
-                        self.entries[x]+=inputstring.split("/")[1];
+                    index=self.x;
+                    if (self.entries[self.x].split("/")[3]==""):
+                        self.entries[self.x]+=inputstring.split("/")[1];
                     else:
-                        self.entries[x]+=",";
-                        self.entries[x]+=inputstring.split("/")[1];
+                        self.entries[self.x]+=",";
+                        self.entries[self.x]+=inputstring.split("/")[1];
                     if (numbsyn==0):
-                        inputstring+=self.entries[x].split("/")[1];
+                        inputstring+=self.entries[self.x].split("/")[1];
                         #print(inputstring);#I dunno, a whole bunch o' bullshit had to happen to get the synonyms to work.
                         numbsyn+=1;
                     else:
                         inputstring+=",";
-                        inputstring+=self.entries[x].split("/")[1];
+                        inputstring+=self.entries[self.x].split("/")[1];
                         print(inputstring);
                 self.x+=1;
             if (self.x==len(self.entries)-1):
                 print("Sorry, we did not find that word.")
             if(synfound):
                 print("These are the known synonyms of the word you just added: {}".format(self.entries[index].split("/")[3]));
-            Ask("Does your word have any synonyms?",["Yes","No"],z);
+            z=Ask("Does your word have any other synonyms?",["Yes","No"],z);
+            self.x=0;
+        self.default();
         return inputstring;
         
 def Ask(Q,PosAns,Ans):
