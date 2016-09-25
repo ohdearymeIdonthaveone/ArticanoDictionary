@@ -4,11 +4,16 @@ class Dictionary:
     synonyms = [];
     heldstring = "";
     x = 0;
+    index = 0;
+    found = False;
 
     def resetDictionary():
         x=0;
         wordandattributes = [];
         heldstring = "";
+        index = 0;
+        found = False;
+        synonyms = [];
 
     def default():
         x = 0;
@@ -71,7 +76,7 @@ class Dictionary:
 class Question:
     Ans = "";
     checkAns = 0;
-    def Ask(self,Q, PosAns):
+    def Ask(self,Q,PosAns,Ans):
         isPos = False;
         checkAns=0;
         Ans = raw_input("{} {}\n".format(Q,PosAns));
@@ -85,5 +90,114 @@ class Question:
                 checkAns=0;
         return ("Good Answer");
             
-ques = Question();
-print(ques.Ask("Are you drunk on power?",["Yes","No"]));
+whatdoyou = Question();
+Articano = Dictionary();
+print("Welcome to the Articano Adaptable Dictionary");
+while(running):
+    Articano.instantiateDitionary();
+    entered = raw_input("Please enter the word you are looking for. \n");
+    Articano.searchDictionaryEnglish(entered);
+    conj = "";
+    x = 0;
+    existingword = ""; #This is used in the "enter a translation" search
+    already = True; #This is used in the "enter a translation" search
+    success = False; #This is used in the Synonyms search
+    numbsyn = 0; #This is used to figure out whether a comma is necessary in the synonym search
+    synfound = False;#This is used in the Synonyms search to suggest other Synonyms
+    if(Articano.found):
+        if(Articano.wordandattributes[2]=="Verb"):
+            whatdoyou.Ask("Do you wish to have this verb conjugated?",["Yes","No"],conj)
+            if(conj == "Yes"):#When conjugating it takes all of the verb form up until the "re" and then adds an ending or another word
+            elif(wordandattributes[2]=="Reflexive Verb"):
+            whatdoyou.Ask("Do you wish to have this verb conjugated?",["Yes","No"],conj)
+            if(conj=="Yes"):
+    if(found == False):       #Just like in English, the conditional, imperfect, and future tenses use another word rather than a separate conjugation.
+        whatdoyou.Ask("You have entered {}. Is this correct?".format(entered),["Yes","No"],z);
+        cont=True;
+        if(z!="No" and z!="Yes"):
+            while (z!="No" and z!="Yes"):
+                z = raw_input("You have entered {}. Is this correct? (Yes/No)\n".format(entered));
+        if(z=="No"):
+            cont=False;
+        else:
+            inputstring += entered;
+            #print(inputstring)
+            while(already):
+                z = raw_input("What is the desired translation of this word? \n");#We have to search everything again just to make sure that the desired translation doesn't already mean something else.
+                while(x<len(entries)):
+                    heldstring = entries[x];
+                   # print(entries[x])
+                    existingword = heldstring.split("/")[1];
+                    if(existingword==z):
+                       print("Sorry, that word already exists. \n");
+                       x=0;
+                       break;
+                    x+=1;
+                if(x==len(entries)):
+                    already=False;
+            inputstring+="/";
+            inputstring+=z;
+            x=0;
+           # print(inputstring);
+            inputstring+="/";
+            z = raw_input("What type of word is this? (Verb, Reflexive Verb, Noun, Adjective, Preposition, Other [please note that Adverbs are automatically created])\n")
+            if(z!="Verb" and z!="Reflexive Verb" and z!="Noun" and z!="Adjective" and z!="Preposition"and z!="Other"):
+                while (z!="Verb" and z!="Reflexive Verb" and z!="Noun" and z!="Adjective" and z!="Preposition"and z!="Other"):
+                    z = raw_input("What type of word is this? (Verb, Reflexive Verb, Noun, Adjective, Preposition, Other)\n");
+            inputstring+=z;
+            inputstring+="/";
+            #Here comes the hardest part. We will search have to search for all words with shared synonyms and add them to the list. RIGHT NOW WE HAVE NOT ADDED THIS FUNCTION
+            z = raw_input("Does your word have any synonyms? (Yes/No)\n");
+            if(z!="No" and z!="Yes"):
+                while (z!="No" and z!="Yes"):
+                    z = raw_input("Does your word have any synonyms? (Yes/No)\n");
+            while(z=="Yes"):
+                z = raw_input("Please enter a synonym in English, and we will see if we have it. \n")
+                while(x<len(entries)):
+                    heldstring = entries[x];
+                    existingword = heldstring.split("/")[0];
+                    if(z==existingword):
+                        print("We have this word! Huzzah!\n");
+                        synfound = True;
+                        index=x;
+                        if (entries[x].split("/")[3]==""):
+                            entries[x]+=inputstring.split("/")[1];
+                        else:
+                            entries[x]+=",";
+                            entries[x]+=inputstring.split("/")[1];
+                        if (numbsyn==0):
+                            inputstring+=entries[x].split("/")[1];
+                            print(inputstring);#I dunno, a whole bunch o' bullshit had to happen to get the synonyms to work.
+                            numbsyn+=1;
+                        else:
+                            inputstring+=",";
+                            inputstring+=entries[x].split("/")[1];
+                            print(inputstring);
+                    x+=1;
+                if (x==len(entries)-1):
+                    print("Sorry, we did not find that word.")
+                if(synfound):
+                    print("These are the known synonyms of the word you just added: {}".format(entries[index].split("/")[3]));
+                z = raw_input("Does your word have any other synonyms? (Yes/No)\n");
+                if(z!="No" and z!="Yes"):
+                    while (z!="No" and z!="Yes"):
+                        z = raw_input("Does your word have any other synonyms? (Yes/No)\n");
+    x = 1;
+    finalstring = entries[0];
+    while(x<len(entries)):
+        finalstring+="|";
+        finalstring+=entries[x];
+        x+=1;
+    if (found==False and cont==True):
+        finalstring+="|";
+        finalstring+=inputstring;
+    with open("Dict.txt", "w") as myfile:
+        myfile.write(finalstring);
+    z = raw_input("Anything else? (Yes/No)\n");
+    if(z!="No" and z!="Yes"):
+         while (z!="No" and z!="Yes"):
+             z = raw_input("Anything else? (Yes/No)\n");
+    if(z=="No"):
+        running = False;
+
+
